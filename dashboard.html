@@ -1,0 +1,497 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Admin</title>
+    <link rel="stylesheet" type="text/css" href="../../static/tag/css/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="../../static/tag/css/bootstrap-datepicker.css">
+    <link rel="stylesheet" type="text/css" href="../../static/tag/css/admin.css">
+</head>
+
+<body>
+    <div id="container">
+    {% include 'web/head.html' with page='dashboard' %}
+        <div id="mainBox">
+            <div id="tag4" class="tag">
+                <h3>短链接点击量趋势图
+                    <div id="date">
+                        日期： <div id="dateBox"><input type="text" class="date start" id="dateStart" /> 至 
+                        <input type="text" class="date end" id="dateEnd"/></div>
+                        <div id="dateTypeBox">
+                            <select id="dateType">
+                                <option value="day">按天显示</option>
+                                <option value="hour">按小时显示</option>
+                            </select>
+                        </div>
+                    </div>
+                </h3>
+                <div id="echarts"></div>
+                <div id="chooseTag">
+                    <h3>选择标签
+                        <div class="tagForm">
+                            <button id="createTag" class="tagBtn">生成</button>
+                            <div class="ui-widget" id="search">
+                                <select id="tagSearch">
+                                </select>
+                            </div>
+                        </div>
+                    </h3>
+                    <ul id="tagChoose">
+                    </ul>
+                    <table id="createTB">
+                        <thead>
+                            <tr>
+                                <th width="500" style="padding-left: 12px;">生成的标签</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="tagEcharts"></div>
+            </div>
+        </div>
+    </div>
+</body>
+<!--[if lt IE 9]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script type="text/javascript" src="../../static/tag/js/jquery-3.1.0.min.js"></script>
+<!--<![endif]-->
+<script type="text/javascript" src="../../static/tag/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../static/tag/js/jquery.combobox.limit.js"></script>
+<script type="text/javascript" src="../../static/tag/js/echarts.min.js"></script>
+<script type="text/javascript" src="../../static/tag/js/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="../../static/tag/js/jquery.timepicker.js"></script>
+<script type="text/javascript" src="../../static/tag/js/jquery.datepair.min.js"></script>
+<script>
+var storage = window.localStorage;
+var nowDate = new Date(),
+    dateStar, dateEnd;
+var li = '<li></li>';
+var td = '<tr><td class="creTd"><ul class="creUl"></ul><button class="grpdel">删除</button></td></tr>';
+//格式化时间
+function clearDate() {
+    dateEnd = nowDate.getFullYear() + '-' + parseInt(nowDate.getMonth() + 1) + '-' + nowDate.getDate();
+    dateStar = getBeforeDate(7);
+    $('#dateEnd').val(dateEnd);
+    $('#dateStart').val(dateStar);
+}
+//前n天方法
+function getBeforeDate(n) {
+    var n = n;
+    var d = new Date();
+    var year = d.getFullYear();
+    var mon = d.getMonth() + 1;
+    var day = d.getDate();
+    if (day <= n) {
+        if (mon > 1) {
+            mon = mon - 1;
+        } else {
+            year = year - 1;
+            mon = 12;
+        }
+    }
+    d.setDate(d.getDate() - n);
+    year = d.getFullYear();
+    mon = d.getMonth() + 1;
+    day = d.getDate();
+    s = year + "-" + mon + "-" + day;
+    return s;
+}
+//计算天数差的函数，通用  
+function DateDiff(sDate1, sDate2) { //sDate1和sDate2是yy-mm-dd格式  
+    var aDate, oDate1, oDate2, iDays
+    aDate = sDate1.split("-")
+    oDate1 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0]) //转换为mm-dd-yy格式  
+    aDate = sDate2.split("-")
+    oDate2 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0])
+    iDays = parseInt((oDate1 - oDate2) / 1000 / 60 / 60 / 24) //把相差的毫秒数转换为天数  
+    return iDays
+};
+//搜索栏
+var tagInput = {{ tags|safe }};
+// var tagInput=[123,123,111];
+var cloneTagInput = tagInput.slice(0);
+function addTagSearch() {
+    $("#tagSearch option").remove()
+    $("#tagSearch").append('<option value=""></option>')
+    for (var i = 0; i < tagInput.length; i++) {
+        $('#tagSearch').append("<option value='" + tagInput[i] + "'>" + tagInput[i] + "</option>");
+    }
+    cloneTagInput = tagInput.slice(0);
+}
+//表格列表方法
+function addLi(groups) {
+    $('#createTB tbody').append(td);
+    var lastI=groups.length-1
+    for (var j = 0; j < groups[lastI].tags.length; j++) {
+        $('.creUl').eq(-1).append(li);
+        $('.creUl').eq(-1).children().eq(j).text(String(groups[lastI].tags[j]))
+    }
+    
+}
+//添加标签方法
+var taglist = [];
+function Tag() {
+    taglist = []
+    for (var i = 0; i < $('#tagChoose li').length; i++) {
+        taglist.push(
+            $('#tagChoose li').eq(i).text()
+        )
+    }
+}
+//线性图get
+function getPostLine(data) {
+    var series = [],
+        da = [],
+        tag = [];
+    var len = data.results.length,
+        dLen = data.results[0].values.length;
+    for (var i = 0; i < len; i++) {
+        tag.push(String(data.results[i].tags));
+    }
+    for (var i = 0; i < dLen; i++) {
+        da.push(data.results[0].values[i][0]);
+    }
+    for (var i = 0; i < len; i++) {
+        var seriesDate = [];
+        for (var j = 0; j < dLen; j++) {
+            seriesDate.push(data.results[i].values[j][1])
+        }
+        series.push({
+            'name': String(tag[i]),
+            'type': 'line',
+            'data': seriesDate
+        })
+    }
+    line(tag, da, series);
+}
+//饼图get
+function getPostRound(data) {
+    var series = [],
+        tag = [];
+    var len = data.results.length,
+        dLen = data.results[0].values.length;
+    for (var i = 0; i < len; i++) {
+        tag.push(String(data.results[i].tags));
+    }
+    for (var i = 0; i < len; i++) {
+        var seriesDate = 0;
+        for (var j = 0; j < dLen; j++) {
+            seriesDate = parseFloat(seriesDate + (data.results[i].values[j][1]))
+        }
+        series.push({
+            'name': String(tag[i]),
+            'value': seriesDate
+        })
+    }
+    round(tag, series)
+}
+//短连接点击趋势图
+function line(t, d, series) {
+    var myChart = echarts.init(document.getElementById('echarts'));
+    option = {
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            bottom: 'bottom',
+            data: t
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: d
+        },
+        color:Color_10,
+        yAxis: {
+            type: 'value',
+            scale: true,
+            splitNumber: 2,
+            axisLabel: {
+                formatter: '{value}'
+            },
+            axisLine: {
+                show: false
+            }
+        },
+        series: series
+    };
+    myChart.setOption(option);
+}
+//饼图
+function round(tg, va) {
+    var myChart = echarts.init(document.getElementById('tagEcharts'));
+    option = {
+        legend: {
+            orient: 'horizontal',
+            top: '80%',
+            data: tg
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        color:Color_10,
+        series: [{
+            name: '',
+            type: 'pie',
+            radius: '50%',
+            align: 'left',
+            center: ['50%', '50%'],
+            data: va,
+            itemStyle: {
+                emphasis: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            }
+        }]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+};
+//随机颜色
+var Color_10=getRandomColor(100);
+function getRandomColor(n){
+    var colorArr=['#A98E67','#0D6C41','#c23531','#2f4554', '#61a0a8', '#d48265', '#91c7ae','#749f83',  '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'];
+    for (var i = 0; i < n; i++) {
+        colorArr.push('#'+Math.floor(Math.random()*16777215).toString(16));
+    }
+    return colorArr
+}
+//标签添加按钮方法
+function addTagFun(val, sel1, sel2) {
+    var hasAdd = false;
+    var addTagLen = $(sel2).length;
+    if (val) {
+        if (addTagLen > 0) {
+            for (var i = 0; i <= addTagLen; i++) {
+                if (val == $(sel2).eq(i).text()) {
+                    hasAdd = true;
+                    break;
+                }
+            }
+            if (!hasAdd) {
+                $(sel1).append(li);
+                $(sel2).eq(-1).text(val);
+            }
+        } else {
+            $(sel1).append(li);
+            $(sel2).eq(-1).text(val);
+        }
+    }
+};
+$(function() {
+    clearDate();
+    //日期选择
+    $('#date .date').datepicker({
+        'format': 'yyyy-m-d',
+        'autoclose': true
+    });
+
+    var groups = [];
+    var dashboard = JSON.parse(storage.getItem('dashboard'));
+    if (dashboard) {
+        groups=dashboard.groups;
+        if (dashboard.category) {
+            $('#dateType').val(dashboard.category);
+        }
+        var arr
+        if (groups) {
+            for(var i=0;i<groups.length;i++){
+                $('#createTB tbody').append(td);
+                arr=dashboard.groups[i].tags;
+                for (var j =0; j<arr.length; j++) {
+                    $('.creUl').eq(-1).append(li);
+                    $('.creUl').eq(-1).children().eq(j).text(arr[j]);
+                }
+            };
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'tag-dashboard' %}',
+                data: JSON.stringify(dashboard),
+                dataType: "json",
+                success: function(data) {
+                    getPostLine(data);
+                    getPostRound(data);
+                },
+                error: function(jqXHR) {},
+            });
+        }
+    }else{
+        groups = []
+    };
+    var eventsExampleEl = document.getElementById('dateBox');
+    var eventsExampleDatepair = new Datepair(eventsExampleEl);
+    $('#dateBox').on('rangeSelected', function() {
+        dateStar = $('#dateStart').val();
+        dateEnd = $('#dateEnd').val();
+        if (!dateStar || !dateEnd) {
+            confirm('请选择日期');
+        } else if (DateDiff(dateEnd, dateStar) >  92) {
+            confirm('请选择区间小于3个月');
+        } else if (DateDiff(dateEnd, dateStar) <  0){
+            confirm('结束日期不能小于起始日期');
+        } else {
+            if (groups.length > 0) {
+                var json = {
+                    start: dateStar,
+                    end: dateEnd,
+                    category:$('#dateType').val(),
+                    groups: groups
+                }
+                storage.clear();
+                storage.setItem('dashboard',JSON.stringify(json));
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url 'tag-dashboard' %}',
+                    data: JSON.stringify(json),
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data) {
+                        getPostLine(data);
+                    },
+                    error: function(jqXHR) {},
+                });
+            } else {
+                confirm('请添加至少一个标签');
+            }
+
+        }
+    });
+    $(document).on('change', '#dateType', function() {
+        dateStar = $('#dateStart').val();
+        dateEnd = $('#dateEnd').val();
+        if (!dateStar || !dateEnd) {
+            confirm('请选择日期');
+        } else if (DateDiff(dateEnd, dateStar) >  92) {
+            confirm('请选择区间小于3个月');
+        } else if (DateDiff(dateEnd, dateStar) <  0){
+            confirm('结束日期不能小于起始日期');
+        } else {
+            if (groups.length > 0) {
+                var json = {
+                    start: dateStar,
+                    end: dateEnd,
+                    category:$('#dateType').val(),
+                    groups: groups
+                }
+                storage.clear();
+                storage.setItem('dashboard',JSON.stringify(json));
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url 'tag-dashboard' %}',
+                    data: JSON.stringify(json),
+                    contentType: "application/json; charset=utf-8",
+                    success: function(data) {
+                        getPostLine(data);
+                    },
+                    error: function(jqXHR) {},
+                });
+            } else {
+                confirm('请添加至少一个标签');
+            }
+
+        }
+    });
+    
+    addTagSearch();
+    $('#tagSearch').combobox({
+        select: function(){
+            addTagFun(arguments[1].item.value, '#tagChoose', '#tagChoose li');
+            for (var i = 0; i < cloneTagInput.length; i++) {
+                if (cloneTagInput[i] == arguments[1].item.value) {
+                    cloneTagInput.splice(i, 1)
+                };
+            }
+            $("#tagSearch option").remove();
+            $("#tagSearch").append('<option value=""></option>')
+            for (var i = 0; i < cloneTagInput.length; i++) {
+                $("#tagSearch").append("<option value='" + cloneTagInput[i] + "'>" + cloneTagInput[i] + "</option>");
+            }
+            setTimeout(function(){
+                $('#search .ui-autocomplete-input').val('');
+            },1)
+        }
+    });
+    //删除标签
+    $(document).on('click', '#tagChoose li', function() {
+        $(this).remove();
+        cloneTagInput.unshift($(this).text());
+        $("#tagSearch option").remove()
+        $("#tagSearch").append('<option value=""></option>')
+        for (var i = 0; i < cloneTagInput.length; i++) {
+            $("#tagSearch").append("<option value='" + cloneTagInput[i] + "'>" + cloneTagInput[i] + "</option>");
+        }
+    });
+    //列表删除
+    $(document).on('click', '.grpdel', function() {
+            var index = $(this).index('.grpdel');
+            $(this).parent().remove();
+            groups.splice(index, 1);
+            var newObj = {
+                start: dashboard.start,
+                end: dashboard.end,
+                category: dashboard.category,
+                groups: groups
+            }
+            storage.clear();
+            storage.setItem('dashboard',JSON.stringify(newObj));
+            location.replace(location);
+        })
+    //生成按钮
+    // var lineObj = [];
+    $(document).on('click', '#createTag', function() {
+        var hasTag = false;
+        var textShow = [];
+        addTagSearch();
+        if ($('#tagChoose li').length > 0) {
+            for (var i = 0; i < $('#tagChoose li').length; i++) {
+                textShow.push($('#tagChoose li').eq(i).text())
+            }
+            var tdLen = groups.length;
+            for (var i = 0; i < tdLen; i++) {
+                if (textShow.sort().toString() == groups[i].tags.sort().toString()) {
+                    hasTag = true;
+                    break;
+                }
+            }
+            if (!hasTag) {
+                hasTag = true;
+                Tag();
+                groups.push({
+                    'tags': taglist
+                })
+                addLi(groups)
+                var json = {
+                    start: $('#dateStart').val(),
+                    end: $('#dateEnd').val(),
+                    category:$('#dateType').val(),
+                    groups: groups
+                }
+                storage.clear();
+                storage.setItem('dashboard',JSON.stringify(json));
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url 'tag-dashboard' %}',
+                    data: JSON.stringify(json),
+                    dataType: "json",
+                    success: function(data) {
+                        getPostLine(data);
+                        getPostRound(data);
+                    },
+                    error: function(jqXHR) {},
+                });
+                $('#tagChoose li').remove();
+            }
+        } else {
+            confirm('请添加一个标签');
+        }
+    })
+})
+</script>
+
+</html>

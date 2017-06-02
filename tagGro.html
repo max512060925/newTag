@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Admin</title>
+    <link rel="stylesheet" type="text/css" href="css/admin.css">
+</head>
+
+<body>
+    <div id="container">
+        <div id="mainBox">
+            <table class="TB">
+                <thead>
+                    <tr>
+                        <th>分组名</th>
+                        <th>用户数</th>
+                        <th>创建时间</th>
+                        <th>最近更新时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>周四活动</td>
+                        <td>583</td>
+                        <td>2017.12.12</th>
+                        <td>2017.12.19</td>
+                        <td class="btnGroup">
+                            <button class="remov"></button>
+                            <button class="reflash"></button>
+                            <button class="del"></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<!--[if lt IE 9]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
+<!--<![endif]-->
+<script type="text/javascript" src="js/jquery.page.js"></script>
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="js/jquery.combobox.limit.js"></script>
+<script>
+var li = '<li></li>';
+//获取urlTag数组
+function UrlSearch() {
+    var name, value, urlArr = [];
+    var str = location.href; //取得整个地址栏
+    var num = str.indexOf("?")
+    str = str.substr(num + 1); //取得所有参数   stringvar.substr(start [, length ]
+    var arr = str.split("&"); //各个参数放到数组里
+    for (var i = 0; i < arr.length; i++) {
+        num = arr[i].indexOf("=");
+        if (num > 0) {
+            name = arr[i].substring(0, num);
+            if (name == 'tag') {
+                value = arr[i].substr(num + 1);
+                urlArr.push({
+                    tag: decodeURIComponent(value)
+                })
+            }
+        }
+    }
+    return urlArr
+}
+
+function getParameterByName(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+//标签添加按钮方法
+function addTagFun(val, sel1, sel2) {
+    var hasAdd = false;
+    var addTagLen = $(sel2).length;
+    if (val) {
+        if (addTagLen > 0) {
+            for (var i = 0; i <= addTagLen; i++) {
+                if (val == $(sel2).eq(i).text()) {
+                    hasAdd = true;
+                    break;
+                }
+            }
+            if (!hasAdd) {
+                $(sel1).append('<li></li>');
+                $(sel2).eq(-1).text(val);
+            }
+        } else {
+            $(sel1).append('<li></li>');
+            $(sel2).eq(-1).text(val);
+        }
+    }
+};
+//url参数替换
+function changeURLArg(url, arg, arg_val) {
+    var pattern = arg + '=([^&]*)';
+    var replaceText = arg + '=' + arg_val;
+    if (url.match(pattern)) {
+        var tmp = '/(' + arg + '=)([^&]*)/gi';
+        tmp = url.replace(eval(tmp), replaceText);
+        return tmp;
+    } else {
+        if (url.match('[\?]')) {
+            return url + '&' + replaceText;
+        } else {
+            return url + '?' + replaceText;
+        }
+    }
+    return url + '\n' + arg + '\n' + arg_val;
+}
+// 验证excel
+function doCheck() {
+    var file = $('#excel').val();
+    if (file == '' || file == null) {
+        confirm('请选择所要上传的文件！');
+    } else {
+        var index = file.lastIndexOf('.');
+        if (index < 0) {
+            confirm('上传的文件格式不正确,请选择Excel文件');
+        } else {
+            var ext = file.substring(index + 1, file.length);
+            if (ext == "xls" || ext == "xlsx") {
+                return true;
+            } else {
+                confirm('上传的文件格式不正确,请选择Excel文件');
+            }
+        }
+    }
+    return false;
+}
+// 判断选择
+function seclecBox() {
+    if (!$('#fLine span').hasClass('sexy') && !$('#fLine span').hasClass('system') && !$('#fLine span').hasClass('city') && !$('#fLine span').hasClass('tagNum') && $('#tagSelectAdd').find('li').length == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+//显示或隐藏box
+function shBox() {
+    if (seclecBox()) {
+        $('#selectBox').hide();
+    } else {
+        $('#selectBox').show();
+    }
+}
+$(function() {
+
+});
+</script>
+
+</html>

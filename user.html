@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+{% load tag_filters %}
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Admin</title>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="css/admin.css">
+</head>
+
+<body>
+    <div id="container">
+        <div id="mainBox">
+            <div id="searchCon">
+                <select id="sexy">
+                    <option value="">性别</option>
+                    <option value="1">男</option>
+                    <option value="2">女</option>
+                </select>
+                <select id="system">
+                    <option value="">按系统</option>
+                    <option value="2">Android</option>
+                    <option value="1">iOS</option>
+                    <option value="0">其他</option>
+                </select>
+                <input type="text" id="city" placeholder="国家/省份/城市">
+                <div id="tagSelect" class="ui-widget">
+                    <select id="tagVal">
+                        <option value="">按标签</option>
+                    </select>
+                </div>
+                <button id="userListBtn" class="tagBtn">搜索</button>
+                <div id="selectBox">
+                    <div id="fLine">
+                        <span id="fIon"></span>
+                        <button id="clear">清空搜索条件</button>
+                    </div>
+                    <div id="sLine">
+                        <span id="sIon"></span>
+                        <ul id="tagSelectAdd"></ul>
+                    </div>
+                </div>
+            </div>
+            <table class="TB" id="userTb" style="table-layout:fixed;" border="0" cellspacing="0" cellpadding="0">
+                <thead>
+                    <tr>
+                        <th>头像</th>
+                        <th>昵称</th>
+                        <th>性别</th>
+                        <th>系统</th>
+                        <th>国家</th>
+                        <th>省份</th>
+                        <th>城市</th>
+                        <th width="120">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>周四活动</td>
+                        <td>583</td>
+                        <td>2017.12.12</th>
+                        <td>2017.12.19</td>
+                        <td>2017.12.19</td>
+                        <td>2017.12.19</td>
+                        <td>2017.12.19</td>
+                        <td class="btnGroup">
+                            <button class="remov"></button>
+                            <button class="reflash"></button>
+                            <button class="del"></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>周四活动</td>
+                        <td>583</td>
+                        <td>2017.12.12</th>
+                        <td>2017.12.19</td>
+                        <td>2017.12.19</td>
+                        <td>2017.12.19</td>
+                        <td>2017.12.19</td>
+                        <td class="btnGroup">
+                            <button class="remov"></button>
+                            <button class="reflash"></button>
+                            <button class="del"></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="bottom">
+                <p>总数: <span >123123123</span></p>
+                <div id="userPage" class="page"></div>
+            </div>
+        </div>
+</body>
+<!--[if lt IE 9]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
+<!--<![endif]-->
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="js/jquery.combobox.limit.js"></script>
+<script type="text/javascript" src="js/jquery.page.js"></script>
+<script type="text/javascript" src="js/clipboard.min.js"></script>
+<script>
+var storage = window.localStorage;
+// ajaxfunction
+function ajax_factory(param) {
+    $.ajax({
+        url: param.url,
+        type: param.type ? param.type : 'get',
+        data: param.data,
+        cache: false,
+        dataType: "json",
+        success: function(json) {
+            typeof param.success == 'function' && param.success(json);
+        },
+        error: function() {}
+    });
+};
+//标签添加按钮方法
+function addTagFun(val, sel1, sel2) {
+    var hasAdd = false;
+    var addTagLen = $(sel2).length;
+    if (val) {
+        if (addTagLen > 0) {
+            for (var i = 0; i <= addTagLen; i++) {
+                if (val == $(sel2).eq(i).text()) {
+                    hasAdd = true;
+                    break;
+                }
+            }
+            if (!hasAdd) {
+                $(sel1).append('<li></li>');
+                $(sel2).eq(-1).text(val);
+            }
+        } else {
+            $(sel1).append('<li></li>');
+            $(sel2).eq(-1).text(val);
+        }
+    }
+};
+function tagSel(sel, arr) {
+    // sel.append('<option value=""></option>')
+    for (var i = 0; i < arr.length; i++) {
+        sel.append("<option value='" + arr[i] + "'>" + arr[i] + "</option>");
+    }
+};
+
+function getParameterByName(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+};
+// 判断选择
+function seclecBox(){
+    if (!$('#fLine span').hasClass('sexy')&&!$('#fLine span').hasClass('system')&&!$('#fLine span').hasClass('city')&&$('#tagSelectAdd').find('li').length==0) {
+        return true;
+    }else{
+        return false;
+    }
+}
+//显示或隐藏box
+function shBox(){
+    if (seclecBox()) {
+        $('#selectBox').hide();
+    }else{
+        $('#selectBox').show();
+    }
+}
+$(function() {
+    //标签选项
+    var tagInput = ['上海', '北京', '广州'];
+    tagSel($('#tagVal'), tagInput);
+
+
+    $('#tagVal').combobox({
+        select: function(){
+            addTagFun(arguments[1].item.value, '#tagSelectAdd', '#tagSelectAdd li');
+            $('#tagVal input').val('');
+            setTimeout(function(){
+                $('#tagSelect .ui-autocomplete-input').val('');
+            },1)
+            shBox();
+            if ($('#tagSelectAdd').find('li').length>0) {
+                $('#userFormBox li').eq(-1).show();
+            }
+        }
+    });
+    $('.ui-autocomplete-input').attr('placeholder', '输入标签名称来搜索...');
+    $(document).on('change', '#sexy', function(){
+        if (!$(this).val()) {
+            $('.sexy').remove();
+        }else if ($(this).val()==1) {
+            $('.sexy').remove();
+            $('#fLine').append('<span class="sexy">男</span>')
+        }else{
+            $('.sexy').remove();
+            $('#fLine').append('<span class="sexy">女</span>')
+        }
+        shBox();
+    });
+    $(document).on('change', '#system', function(){
+        if (!$(this).val()) {
+            $('.system').remove();
+        }else if ($(this).val()==0) {
+            $('.system').remove();
+            $('#fLine').append('<span class="system">其他</span>')
+        }else if($(this).val()==1){
+            $('.system').remove();
+            $('#selectBox').show();
+            $('#fLine').append('<span class="system">iOS</span>')
+        }
+        else{
+            $('.system').remove();
+            $('#selectBox').show();
+            $('#fLine').append('<span class="system">Android</span>')
+        }
+        shBox();
+    });
+    $(document).on('input', '#city', function(){
+        if (!$(this).val()) {
+            $('.city').remove();
+        }else{
+            $('.city').remove();
+            $('#selectBox').show();
+            $('#fLine').append('<span class="city">'+$(this).val()+'</span>')
+        }
+        shBox();
+    });
+    $(document).on('click', '.sexy', function(){
+        $(this).remove();
+        $('#sexy').val('');
+        shBox();
+    });
+    $(document).on('click', '.system', function(){
+        $(this).remove();
+        $('#system').val('');
+        shBox();
+    });
+    $(document).on('click', '.city', function(){
+        $(this).remove();
+        $('#city').val('');
+        shBox();
+    });
+    $(document).on('click', '#clear', function(){
+        $('.sexy,.system,.city,.tagNum').trigger('click');
+        $('#tagSelectAdd').empty();
+        $('#selectBox').hide();
+        $('#userFormBox li').eq(-1).hide();
+    });
+    $('#userPage').createPage({
+        pageCount: 10, //总页数
+        current: 2,
+        backFn: function(bp) {
+            console.log(bp);
+        }
+    });
+});
+</script>
+
+</html>

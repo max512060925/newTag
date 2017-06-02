@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+{% load tag_filters %}
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Admin</title>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="css/admin.css">
+</head>
+
+<body>
+    <div id="container">
+        <!-- <div id="sideBar">
+            <div id="textList">
+                <h2>公众号标签系统</h2>
+                <ul>
+                    <li class="act"><i class="icon1_act mr_11"></i>标签事件</li>
+                    <li><i class="icon2_un mr_11"></i>标签管理</li>
+                    <li><i class="icon3_un mr_11"></i>标签分组</li>
+                    <li><i class="icon4_un mr_11"></i>分组群发</li>
+                    <li><i class="icon5_un mr_11"></i>用户管理</li>
+                    <li><i class="icon6_un mr_11"></i>标签统计</li>
+                </ul>
+            </div>
+            <div id="iconList">
+                <h2></h2>
+                <ul>
+                    <li class="act"><i class="icon1_act"></i></li>
+                    <li><i class="icon2_un"></i></li>
+                    <li><i class="icon3_un"></i></li>
+                    <li><i class="icon4_un"></i></li>
+                    <li><i class="icon5_un"></i></li>
+                    <li><i class="icon6_un"></i></li>
+                </ul>
+            </div>
+        </div>
+        <div id="titleBar">
+            <button id="changeBtn" class="show"></button>
+            <button id="mail"><span class="hasMail"></span></button>
+            <div id="icon" style="background: url(img/oookini.jpeg);    background-size:contain;"></div>
+            <p id="tip">OOOKINI服务</p>
+            <div id="loginOut"></div>
+        </div> -->
+        <div id="mainBox">
+            <div class="cover">
+                <div id="cover_1">
+                    <div class="inputBox">事件名
+                        <input type="text" name="" placeholder="请输入事件名称" class="input_1" />
+                    </div>
+                    <div class="inputBox">原链接
+                        <input type="text" name="" placeholder="请输入原链接" class="input_1" />
+                    </div>
+                    <div class="inputBox">标签
+                        <input type="text" name="" placeholder="请输入标签名称2" class="input_2" />
+                        <input type="text" name="" placeholder="请输入标签名称1" class="input_2" />
+                    </div>
+                    <div class="inputBox">
+                        <input type="text" name="" placeholder="请输入标签名称4" class="input_2" />
+                        <input type="text" name="" placeholder="请输入标签名称3" class="input_2" />
+                    </div>
+                    <button class="finishBtn">完成</button>
+                    <button class="close">x</button>
+                </div>
+                <div id="cover_2">
+                    <p>成功生成短链接</p>
+                    <p id="copyUrl">URL短链接：<span></span></p>
+                    <button id="copyBtn">复制链接</button>
+                    <button class="close">x</button>
+                </div>
+                <div id="cover_3">
+                    <div class="inputBox">用途
+                        <input type="text" name="" placeholder="请输入用途" class="input_1" />
+                    </div>
+                    <div class="inputBox">微信事件ID
+                        <input type="text" name="" placeholder="请输入微信事件ID" class="input_1" />
+                    </div>
+                    <div class="inputBox">标签
+                        <input type="text" name="" placeholder="请输入标签名称2" class="input_2" />
+                        <input type="text" name="" placeholder="请输入标签名称1" class="input_2" />
+                    </div>
+                    <div class="inputBox">
+                        <input type="text" name="" placeholder="请输入标签名称4" class="input_2" />
+                        <input type="text" name="" placeholder="请输入标签名称3" class="input_2" />
+                    </div>
+                    <button class="finishBtn">完成</button>
+                    <button class="close">x</button>
+                </div>
+            </div>
+            <div id="searchBox">
+                <input type="text" name="" placeholder="输入标签名称来搜索...">
+                <button id="searchBtn"></button>
+            </div>
+            <ul id="tagBox">
+                <li>
+                    <h3>标签名1</h3>
+                    <p class="line_1">1000</p>
+                    <p class="line_2">4000</p>
+                    <p class="line_3">2017.12.12</p>
+                    <div class="chooseCover"></div>
+                </li>
+                <li>
+                    <h3>标签名2</h3>
+                    <p class="line_1">1000</p>
+                    <p class="line_2">4000</p>
+                    <p class="line_3">2017.12.12</p>
+                    <div class="chooseCover"></div>
+                </li>
+                <li>
+                    <h3>标签名3</h3>
+                    <p class="line_1">1000</p>
+                    <p class="line_2">4000</p>
+                    <p class="line_3">2017.12.12</p>
+                    <div class="chooseCover"></div>
+                </li>
+                <li>
+                    <h3>标签名4</h3>
+                    <p class="line_1">1000</p>
+                    <p class="line_2">4000</p>
+                    <p class="line_3">2017.12.12</p>
+                    <div class="chooseCover"></div>
+                </li>
+                <li>
+                    <h3>标签名5</h3>
+                    <p class="line_1">1000</p>
+                    <p class="line_2">4000</p>
+                    <p class="line_3">2017.12.12</p>
+                    <div class="chooseCover"></div>
+                </li>
+                <li>
+                    <h3>标签名6</h3>
+                    <p class="line_1">1000</p>
+                    <p class="line_2">4000</p>
+                    <p class="line_3">2017.12.12</p>
+                    <div class="chooseCover"></div>
+                </li>
+                <li>
+                    <h3>标签名7</h3>
+                    <p class="line_1">1000</p>
+                    <p class="line_2">4000</p>
+                    <p class="line_3">2017.12.12</p>
+                    <div class="chooseCover"></div>
+                </li>
+            </ul>
+            <div id="tagBoxPage" class="page"></div>
+            <p class="title_1">已选中的标签</p>
+            <ul id="addTag"></ul>
+            <button id="groupBtn">合成微信分组</button>
+            <button id="viewData">查看数据</button>
+        </div>
+    </div>
+</body>
+<!--[if lt IE 9]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
+<!--<![endif]-->
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="js/jquery.combobox.limit.js"></script>
+<script type="text/javascript" src="js/jquery.page.js"></script>
+<script type="text/javascript" src="js/clipboard.min.js"></script>
+<script>
+var storage = window.localStorage;
+// ajaxfunction
+function ajax_factory(param) {
+    $.ajax({
+        url: param.url,
+        type: param.type ? param.type : 'get',
+        data: param.data,
+        cache: false,
+        dataType: "json",
+        success: function(json) {
+            typeof param.success == 'function' && param.success(json);
+        },
+        error: function() {}
+    });
+};
+
+function getParameterByName(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+};
+
+
+function toolBtn() {
+    $(document).on('click', '#changeBtn', function() {
+        if ($(this).hasClass('show')) {
+            $(this).removeClass('show').addClass('hide');
+            $('#textList').hide();
+            $('#iconList').show();
+            $('#sideBar').width(80);
+            $('#titleBar,#mainBox').width(920);
+            storage.setItem('toolBtn', '1');
+        } else {
+            $(this).removeClass('hide').addClass('show');
+            $('#iconList').hide();
+            $('#textList').show();
+            $('#sideBar').width(148);
+            $('#titleBar,#mainBox').width(852);
+            storage.clear();
+        }
+    });
+    if (storage.getItem('toolBtn')) {
+        $('#changeBtn').trigger('click');
+    };
+};
+
+function tagSelect() {
+    $(document).on('click', '#tagBox li', function() {
+        var i = $(this).index();
+        if ($(this).children('.chooseCover').is(':hidden')) {
+            if ($('#addTag li').length == 0) {
+                $('#addTag').append($(this).clone());
+                $(this).children('.chooseCover').show();
+            } else {
+                var hasTag = false;
+                for (var j = 0; j < $('#addTag li h3').length; j++) {
+                    if ($('#tagBox li h3').eq(i).text() == $('#addTag li h3').eq(j).text()) {
+                        hasTag = true;
+                    }
+                }
+                if (!hasTag) {
+                    $('#addTag').append($(this).clone());
+                    $(this).children('.chooseCover').show();
+                }
+            }
+
+        } else {
+            for (var j = 0; j < $('#addTag li h3').length; j++) {
+                if ($('#tagBox li h3').eq(i).text() == $('#addTag li h3').eq(j).text()) {
+                    $('#addTag li').eq(j).remove();
+                }
+            }
+            $(this).children('.chooseCover').hide();
+        }
+        var arr = [];
+        for (var k = 0; k < $('#addTag li h3').length; k++) {
+            arr.push($('#addTag li h3').eq(k).text());
+        }
+        storage.clear();
+        storage.setItem('tagG', JSON.stringify(arr));
+    });
+};
+$(function() {
+    //复制链接按钮
+    var clipboard = new Clipboard('#copyBtn');
+    clipboard.on('success', function(e) {
+        $('.cover,#cover_2').hide();
+    });
+    $(document).on('click', '.copy', function() {
+        var i = $(this).index();
+        console.log(1);
+        $('#copyUrl span').text($('.sUrl').eq(i).text())
+        $('.cover,#cover_2').show();
+        $('#copyBtn').attr('data-clipboard-text', $('.sUrl').eq(i).text());
+    });
+    $(document).on('click', '.close', function() {
+        $('.cover,#cover_1,#cover_2,#cover_3').hide();
+    });
+    tagSelect();
+    var tagG = JSON.parse(storage.getItem('tagG'))
+    if (tagG) {
+        for (var i = 0; i < tagG.length; i++) {
+            for (var j = 0; j < $('#tagBox li').length; j++) {
+                if (tagG[i] == $('#tagBox li h3').eq(j).text()) {
+                    $('#tagBox li').eq(j).trigger('click');
+                };
+            }
+
+        }
+    }
+    $('#tagBoxPage').createPage({
+        pageCount: 10, //总页数
+        current: 2,
+        backFn: function(bp) {
+            console.log(bp);
+        }
+    });
+
+
+});
+</script>
+
+</html>

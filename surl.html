@@ -1,0 +1,386 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+{% load tag_filters %}
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Admin</title>
+    <link rel="stylesheet" type="text/css" href="../../static/tag/css/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="../../static/tag/css/bootstrap-datepicker.css">
+    <link rel="stylesheet" type="text/css" href="../../static/tag/css/admin.css">
+</head>
+
+<body>
+    <div id="container">
+    {% include 'web/head.html' with page="surl" %}
+        <div id="mainBox">
+            <div id="tag1" class="tag">
+                <div class="tagMain">
+                    <h3>链接</h3>
+                    <div class="tagForm">
+                        <ul id="userListBox">
+<!--                             <li>
+                                <select id="tagDate">
+                                    <option value="">日期</option>
+                                </select>
+                            </li> -->
+                            <li>
+                                <select id="source">
+                                    <option value="">来源</option>
+                                </select>
+                            </li>
+                        </ul>
+                        <div id="tagNameSearch" class="ui-widget">
+                            <select id="tagNameSearchIpu">
+                                <option value=""></option>
+                            </select>
+                            <button id="tagSearchBtn" class="tagBtn">筛选</button>
+                        </div>
+                    </div>
+                    <table id="TB" style="table-layout:fixed;">
+                        <thead>
+                            <tr>
+                                <th style="display: none"></th>
+                                <th width="120" class="surl">短链接</th>
+                                <th width="160">原链接</th>
+                                <th>标签</th>
+                                <th>用途</th>
+                                <th width="160">详情</th>
+                                <th>PV</th>
+                                <th width=230>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for live_url in live_urls %}
+                            <tr height="60">
+                                <td class="id">{{live_url.id}}</td>
+                                <td class="surl"><a href="{{live_url.hash|surl}}" target="_blank">{{live_url.hash}}</a></td>
+                                <td class="lurl"><a href="{{live_url.url}}" target="_blank">{{live_url.url}}</a></td>
+                                <td class="tbTag">
+                                    <ul>
+                                        {% for tag in live_url.tags.all %}
+                                        <li>{{tag.name}}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                                <td class="from">{{live_url.source.name}}</td>
+                                <td class="description">{{live_url.description}}</th>
+                                <td class="pv">{{live_url.counter}}</td>
+                                <td class="btnGroup">
+                                    <button class="copy" data-clipboard-text="{{live_url.hash|surl}}">复制链接</button>
+                                    <button class="edit">编辑</button>
+                                    <button class="del">删除</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div id="tag1Side" class="tagSide">
+                    <h3>新增自动加标签链接</h3>
+                    <div class="sideForm">
+                        <p>原链接：</p>
+                        <input id="lurl" type="text">
+                        <p>用途：</p>
+                        <div id="surlFromBox" class="ui-widget">
+                            <select id="addFromInp">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                        <!-- <p>日期：</p>
+                        <input id="addDate" type="text" class="date"> -->
+                        <p>添加标签：<span style="font-size: 10px;">(可添加多个标签)</span></p>
+                        <div id="tagAddBox" class="ui-widget">
+                            <select id="tagIpu">
+                                <option value=""></option>
+                            </select>
+                            <button id="addTag" class="f_r">添加</button>
+                        </div>
+                        <ul id="tagAdd"></ul>
+                        <textarea id="shortText" placeholder="详情"></textarea>
+                        <br>
+                        <button id="shortBtn">生成链接</button>
+                    </div>
+                </div>
+            </div>
+            <div class="page"></div>
+            <div class="cover">
+                <div id="editBox">
+                    <h3>编辑短链接</h3>
+                    <div class="editForm">
+                        <p>短链接：</p>
+                        <input id="editLurl" type="text">
+                        <p>来源：</p>
+                        <div id="editFromBox" class="ui-widget">
+                            <select id="editAddInp">
+                            </select>
+                        </div>
+                        <p>标签：</p>
+                        <div id="editTagBox" class="ui-widget">
+                            <select id="editTagIpu">
+                                <option value=""></option>
+                            </select>
+                            <button id="editAddTag">添加</button>
+                        </div>
+                        <ul id="editAdd"></ul>
+                        <textarea id="editText" placeholder="详细内容" class="mt_10"></textarea>
+                        <br>
+                        <button id="editBtn">编辑</button>
+                        <button id="editClose">X</button>
+                        <p class="callback"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<!--[if lt IE 9]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script type="text/javascript" src="../../static/tag/js/jquery-3.1.0.min.js"></script>
+<!--<![endif]-->
+<script type="text/javascript" src="../../static/tag/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../static/tag/js/jquery.combobox.js"></script>
+<script type="text/javascript" src="../../static/tag/js/jquery.page.js"></script>
+<script type="text/javascript" src="../../static/tag/js/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="../../static/tag/js/jquery.timepicker.js"></script>
+<script type="text/javascript" src="../../static/tag/js/jquery.datepair.min.js"></script>
+<script type="text/javascript" src="../../static/tag/js/clipboard.min.js"></script>
+<script>
+var li = '<li></li>';
+//标签添加按钮方法
+function addTagFun(btn, val, sel1, sel2) {
+    $(document).on('click', btn, function() {
+        var hasAdd = false;
+        var addTagLen = $(sel2).length;
+        if ($(val).val()) {
+            if (addTagLen > 0) {
+                for (var i = 0; i <= addTagLen; i++) {
+                    if ($(val).val() == $(sel2).eq(i).text()) {
+                        hasAdd = true;
+                        break;
+                    }
+                }
+                if (!hasAdd) {
+                    $(sel1).append(li);
+                    $(sel2).eq(-1).text($(val).val());
+                }
+            } else {
+                $(sel1).append(li);
+                $(sel2).eq(-1).text($(val).val());
+            }
+        }
+        $(val).val('');
+    });
+};
+
+function tagSel(sel, arr) {
+    // sel.append('<option value=""></option>')
+    for (var i = 0; i < arr.length; i++) {
+        sel.append("<option value='" + arr[i] + "'>" + arr[i] + "</option>");
+    }
+}
+
+function close() {
+    $("#editBox").hide();
+    $('.cover').hide();
+    $("#editBox textarea").val('');
+    $("#editAdd li").remove();
+    $('.callback').text('');
+};
+//获取最近12个月
+function getLast12Months(){  
+    var last12Months = [];  
+    var today = new Date();  
+    today.setMonth(today.getMonth()+1);  
+    for(var i=0;i<12;i++){  
+        var lastMonth = today.setMonth(today.getMonth()-1);  
+        last12Months[11-i] = today.getFullYear() + "-" + ((Number(today.getMonth())+1)<10?'0'+(Number(today.getMonth())+1):(Number(today.getMonth())+1));  
+    }  
+    return last12Months;  
+}
+//双色边栏
+function tableTrColor(){
+    $('tbody tr').each(function(i){
+        if (i % 2 !== 0) {
+            $('tbody tr').eq(i).children('td').css('background','#F8F8F8');
+        }
+    })
+}
+
+function getParameterByName(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+$(function() {
+    var page = getParameterByName('page')||1;
+    $('.page').createPage({
+        pageCount: {{ live_urls.paginator.num_pages }}, //总页数
+        current: {{ live_urls.number }},
+        backFn: function(p) {
+            page = p;
+            if(getParameterByName('page')){
+                window.location.href = changeURLArg(window.location.href,'page',page)
+            }else if(window.location.href.indexOf("?")!=-1){
+                window.location.href = window.location.href + '&page='+page
+            }else{
+                window.location.href = window.location.href + '?page='+page
+            }
+        }
+    });
+    //添加日期
+    // for (var i = getLast12Months().length-1; i >-1; i--) {
+    //     $('#tagDate').append('<option value="'+getLast12Months()[i]+'">'+getLast12Months()[i]+'</option>');
+    // };
+    var fromInput = {{ sources | safe }};
+    var tagInput = {{ tags | safe }};
+    // var fromInput = ['ly1', 'ly2', 'ly3'];
+    // var tagInput = ['123123', '123', '12312'];
+    //日期选择
+    $('.date').datepicker({
+        'format': 'yyyy-m-d',
+        'autoclose': true
+    });
+    tableTrColor();
+    tagSel($('#source'), fromInput);
+    tagSel($('#addFromInp'), fromInput);
+    tagSel($('#tagIpu'), tagInput);
+    tagSel($('#tagNameSearchIpu'), tagInput);
+    $("#addFromInp").combobox();
+    $('#tagIpu').combobox();
+    $('#tagNameSearchIpu').combobox();
+    // $('#tagDate').val(getParameterByName('publish')?getParameterByName('publish').substring(0,7):'');
+    $('#source').val(getParameterByName('source')||'');
+    $('#tagNameSearch input').val(getParameterByName('tag')||'');
+    addTagFun('#addTag', '#tagAddBox input', '#tagAdd', '#tagAdd li');
+    addTagFun('#editAddTag', '#editTagBox input', '#editAdd', '#editAdd li');
+    //删除标签
+    $(document).on('click', '#tagAdd li', function() {
+        $(this).remove();
+    });
+    $(document).on('click', '#editAdd li', function() {
+        $(this).remove();
+    });
+    //点击搜索
+    $(document).on('click', '#tagSearchBtn', function() {
+        // var publish = $('#tagDate').val()?$('#tagDate').val()+'-01':'',
+        var source = $('#source').val(),
+            tag=$('#tagNameSearch input').val();
+        urlA ='source='+source+'&tag='+tag;
+        window.location.href='{% url 'tag-surl' %}?'+urlA;
+    })
+    //点击编辑按钮
+    var urlA;
+    var editOP = false;
+    $(".edit").each(function(i) {
+        urlA = '';
+        $(this).on("click", function() {
+            if (!editOP) {
+                var id = $('.id').eq(i).text();
+                editOP = true;
+                $('.cover').show();
+                $('#editBox').show();
+                $("#editAddInp").combobox();
+                $("#editTagIpu").combobox();
+                $('#editLurl').val($('.surl').eq(i).text());
+                $('#editAddInp option').remove();
+                tagSel($('#editAddInp'), fromInput)
+                $('#editFromBox input').val($('.from').eq(i).text());
+                $('#editAddInp').prepend("<option value='" + $('.from').eq(i).text() + "'>" + $('.from').eq(i).text() + "</option>");
+                $('#editTagIpu option').remove();
+                tagSel($('#editTagIpu'), tagInput);
+                $('#editText').val(''); 
+                //编辑内容取值
+                var tagLen = $('.tbTag').eq(i).children().children().length;
+                for (j = 0; j < tagLen; j++) {
+                    $('#editAdd').append(li);
+                    $('#editAdd li').eq(-1).text($('.tbTag').eq(i).children().children().eq(j).text());
+                }
+            }
+            $('#editBtn').on('click', function() {
+                $('.callback').text('请稍后...');
+                var lurl = encodeURIComponent($('#editLurl').val()),
+                    lurlFrom = $('#editFromBox input').val(),
+                    content = $('#editText').val();
+                var addTagLen = $('#editAdd li').length;
+                urlA = 'id=' + id + '&url=' + lurl + '&source=' + lurlFrom + '&description=' + content;
+                for (var i = 0; i < addTagLen; i++) {
+                    urlA = urlA + '&tag=' + ($('#editAdd li').eq(i).text())
+                }
+                if (!lurl) {
+                    confirm('请编辑原连接');
+                } else if (!lurlFrom) {
+                    confirm('请编辑来源');
+                } else if (!addTagLen > 0) {
+                    confirm('请至少添加一个标签');
+                } else {
+                    $.ajax({
+                        type: 'PUT',
+                        url: '{% url 'tag-surl' %}',
+                        data: urlA,
+                        success: function(data) {
+                            location.reload()
+                        },
+                        error: function(jqXHR) {},
+                    });
+                };
+            })
+        });
+    });
+
+    //关闭按钮
+    $(document).on('click', '#editClose', function() {
+        close();
+        editOP = false;
+    })
+    //删除按钮
+    $('.del').each(function(i){
+        $(this).on('click',function(){
+            $.ajax({
+                type: 'DELETE',
+                url: '/tag/surl?id='+$('.id').eq(i).text(),
+                success: function(data) {
+                    window.location.reload();
+                },
+                error: function(jqXHR) {}
+            });
+        });
+    });
+    //复制链接按钮
+    var clipboard = new Clipboard('.copy');
+    clipboard.on('success', function(e) {
+        alert('复制链接成功');
+    });
+    $(document).on('click', '#shortBtn', function() {
+        urlA = '';
+        var lurl = encodeURIComponent($('#lurl').val()),
+            lurlFrom = $('#surlFromBox input').val(),
+            content = $('#shortText').val();
+        var addTagLen = $('#tagAdd li').length;
+        var urlA = 'url=' + lurl + '&source=' + lurlFrom + '&description=' + content;
+        for (var i = 0; i < addTagLen; i++) {
+            urlA = urlA + '&tag=' + ($('#tagAdd li').eq(i).text())
+        }
+        console.log(urlA)
+        if (!lurl) {
+            confirm('请编辑原连接');
+        } else if (!lurlFrom) {
+            confirm('请编辑来源');
+        } else if (!addTagLen > 0) {
+            confirm('请至少添加一个标签');
+        } else {
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'tag-surl' %}?',
+                data: urlA,
+                success: function(data) {
+                    window.location.reload();
+                },
+                error: function(jqXHR) {},
+            });
+        }
+    })
+});
+</script>
+
+</html>

@@ -1,0 +1,175 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+div,
+ul,
+ul li,
+p,
+h2,
+input,
+button {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+}
+
+body {
+    font-family: arial, "Microsoft YaHei";
+    font-size: 14px;
+}
+
+button {
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+td,
+th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+div,
+ul,
+ul li,
+p,
+h2,
+input,
+button,
+select {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+}
+
+ul li {
+    list-style: none;
+}
+
+select {
+    outline: none;
+    border: none;
+    background: #fff;
+}
+
+input,
+textarea {
+    outline: none;
+    border: none;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+}
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+    color: #B9C3CE;
+}
+
+input:-moz-placeholder,
+textarea:-moz-placeholder {
+    color: #B9C3CE;
+}
+
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+    color: #B9C3CE;
+}
+
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+    color: #B9C3CE;
+}
+
+#container {
+    width: 1000px;
+    min-height: 614px;
+    background: #F9F9F9 url(../img/bg.png) center center no-repeat;
+    margin: 0 auto;
+    position: relative;
+}
+
+#container h2 {
+    position: absolute;
+    width: 100%;
+    height: 33px;
+    top: 56px;
+    text-align: center;
+    font-size: 24px;
+    color: #FFFFFF;
+}
+
+#loginBox {
+    width: 432px;
+    height: 348px;
+    background: #FFFFFF url(../img/box.png) center center no-repeat;
+    ;
+    border: 1px solid #CECECE;
+    position: absolute;
+    top: 134px;
+    left: 50%;
+    margin-left: -216px;
+    padding: 40px;
+}
+
+#loginBox p {
+    font-size: 18px;
+    color: #2B2B2B;
+}
+
+#loginBox input {
+    width: 352px;
+    line-height: 17px;
+    background: transparent;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #B9C3CE;
+}
+
+#loginBox input:focus {
+    border-bottom: 1px solid #1EAAF1;
+}
+
+#loginBox #username {
+    margin-top: 27px;
+}
+
+#loginBox #password {
+    margin-top: 40px;
+}
+
+#remenber {
+    padding-left: 19px;
+    font-size: 12px;
+    margin-top: 15px;
+    cursor: pointer;
+    width: 73px;
+}
+
+#remenber.n {
+    background: url(../img/n.png) left center no-repeat;
+    color: #B9C3CE;
+}
+
+#remenber.y {
+    background: url(../img/y.png) left center no-repeat;
+    color: #000000;
+}
+
+#loginBtn {
+    width: 352px;
+    height: 34px;
+    background: #1EAAF1;
+    border-radius: 2px;
+    color: #FFFFFF;
+    margin-top: 31px;
+}

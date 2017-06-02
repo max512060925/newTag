@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="css/login.css">
+</head>
+
+<body>
+    <div id="container">
+        <h2>公众号标签系统</h2>
+        <div id="loginBox">
+            <!-- {% if emsg != "" %}<p style="color:#FF0000">*{{emsg}}</p>{% endif %} -->
+            <form method="post" id="logForm" action="{% url " tag-login " %}" onsubmit="return sub()">
+                <p>登录</p>
+                <input type="text" name="username" id="username" value="" placeholder="账号">
+                <input type="password" name="password" id="password" value="" placeholder="密码">
+                <div id="remenber" class="n">记住密码</div>
+                <button id="loginBtn" type="submit">登录</button>
+                <!--  {% csrf_token %} -->
+            </form>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
+<script type="text/javascript">
+function sub() {
+    var username = $('#username').val();
+    var userpass = $('#password').val();
+    if (!username || !userpass) {
+        confirm('请填写完整');
+        return false;
+    } else {
+        return true;
+    }
+
+}
+$(document).on('click', '#remenber', function() {
+    console.log(0)
+    if ($(this).hasClass('y')) {
+        $(this).removeClass('y').addClass('n');
+    } else {
+        $(this).removeClass('n').addClass('y');
+    }
+})
+</script>
+
+</html>
